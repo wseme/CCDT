@@ -18,7 +18,6 @@ public class Line {
 			return;			
 		}
 		
-		
 		this.line = line;
 		this.lineNumber = lineNumber;
 	}

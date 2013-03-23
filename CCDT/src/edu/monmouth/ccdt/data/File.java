@@ -20,7 +20,7 @@ public class File {
 		try {
 			this.fileName = file.getCanonicalPath();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+			System.err.println("Check if inputted file path is valid.");
 			e1.printStackTrace();
 			return;
 		}
@@ -41,7 +41,7 @@ public class File {
 			  
 			  in.close();
 		}catch (Exception e){
-			  System.err.println("Error: " + e.getMessage());
+			  System.err.println("Could not parse file\nError: " + e.getMessage());
 			  return;
 		}
 		lines = lineList.toArray(new Line[lineList.size()]);

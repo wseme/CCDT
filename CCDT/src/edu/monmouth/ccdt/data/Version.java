@@ -7,18 +7,12 @@ import org.joda.time.DateTime;
 
 public class Version {
 
-	private String name;
 	private int number;
 	private DateTime dateUploaded;
 	private ArrayList<File> files;
 	private ArrayList<Change> changes;
 	
-	public Version(String name, int number, java.io.File fileFolder){
-		
-		if(name == null){
-			System.err.println("Inputted version name can not be null");
-			return;
-		}
+	public Version(int number, java.io.File fileFolder){		
 		
 		if(number <=0){
 			System.err.println("Inputted version number needs to be greater than 0.");
@@ -29,8 +23,7 @@ public class Version {
 			System.err.println("Inputted file can not be null.");
 			return;	
 		}
-		
-		this.name = name;
+				
 		this.number = number;
 		this.dateUploaded = new DateTime();
 		
@@ -87,7 +80,7 @@ public class Version {
 	
 	
 	public String getName(){
-		return name;
+		return "Version " + (number + 1);
 	}
 	
 	public int getNumber(){

@@ -10,8 +10,11 @@ public class Program {
 		versions = new ArrayList<Version>();
 	}
 	
-	public void addVersion(Version version){
-		versions.add(version);
+	public void addVersion(java.io.File fileFolder){
+		int version = versions.size();
+		if (version == 0) version = 1;
+		
+		versions.add(new Version(version, fileFolder));
 	}
 	
 	public ArrayList<Version> getVersions(){

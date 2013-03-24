@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class File {
 	
 	private String fileName;
-	private Line[] lines;
+	private ArrayList<Line> lines;
 	
 	public File(java.io.File file){
 		if(file == null){
@@ -24,7 +24,7 @@ public class File {
 			e1.printStackTrace();
 			return;
 		}
-		ArrayList<Line> lineList = new ArrayList<Line>();
+		lines = new ArrayList<Line>();
 		int lineNumber = 1;
 		String strLine;
 		
@@ -35,7 +35,7 @@ public class File {
 	  
 			  while ((strLine = br.readLine()) != null)   {
 				  Line line = new Line(strLine, lineNumber);
-				  lineList.add(line);
+				  lines.add(line);
 				  lineNumber++;
 			  }
 			  
@@ -44,7 +44,7 @@ public class File {
 			  System.err.println("Could not parse file\nError: " + e.getMessage());
 			  return;
 		}
-		lines = lineList.toArray(new Line[lineList.size()]);
+		
 		
 	}
 	
@@ -52,12 +52,12 @@ public class File {
 		return this.fileName;
 	}
 	
-	public Line[] getLines(){
+	public ArrayList<Line> getLines(){
 		return lines;
 	}
 	
 	public int getNumberOfLines(){
 		//TODO implement getNumberOfLines(changetype) if that is correct
-		return lines.length;
+		return lines.size();
 	}
 }

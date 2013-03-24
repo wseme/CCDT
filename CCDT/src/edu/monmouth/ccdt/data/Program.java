@@ -11,8 +11,7 @@ public class Program {
 	}
 	
 	public void addVersion(java.io.File fileFolder){
-		int version = versions.size();
-		if (version == 0) version = 1;
+		int version = versions.size() + 1;
 		
 		versions.add(new Version(version, fileFolder));
 	}

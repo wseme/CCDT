@@ -19,9 +19,16 @@ public class File {
 			return;
 		}
 		
+		if(file.getName().endsWith(".jpg") ||file.getName().endsWith(".jpeg") ||file.getName().endsWith(".gif") ||file.getName().endsWith(".png") ){
+			System.err.println("Inputted file may not be a .jpeg, .gif, or .png file");
+			return;
+		}
+		
+		this.fileName = file.getName();
+		
+		
 		try {
-			this.filePath = file.getCanonicalPath();
-			this.fileName = file.getName();
+			this.filePath = file.getCanonicalPath();			
 		} catch (IOException e1) {
 			System.err.println("Check if inputted file path is valid.");
 			e1.printStackTrace();

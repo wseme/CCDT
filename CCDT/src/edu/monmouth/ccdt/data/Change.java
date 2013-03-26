@@ -78,7 +78,7 @@ public class Change {
 		
 	}
 	
-	public void diff(){;
+	private void diff(){;
 	
 		File previousFile = getPreviousFile();
 		File currentFile = getCurrentFile();
@@ -133,6 +133,54 @@ public class Change {
 	}
 	
 	
+	public int getLineAmountAdded(){
+		ArrayList<Line> lines = getCurrentFile().getLines();
+		int lineCount = 0;
+		
+		for(Line line : lines){
+			if (line.getType() == ChangeType.ADDED){
+				lineCount++;
+			}
+		}
+		return lineCount;
+	}
+	
+	public int getLineAmountDeleted(){
+		ArrayList<Line> lines = getCurrentFile().getLines();
+		int lineCount = 0;
+		
+		for(Line line : lines){
+			if (line.getType() == ChangeType.DELETED){
+				lineCount++;
+			}
+		}
+		return lineCount;
+	}
+	
+	public int getLineAmountChanged(){
+		ArrayList<Line> lines = getCurrentFile().getLines();
+		int lineCount = 0;
+		
+		for(Line line : lines){
+			if (line.getType() == ChangeType.CHANGED){
+				lineCount++;
+			}
+		}
+		return lineCount;
+	}
+	
+	public int getLineAmountNoChange(){
+		ArrayList<Line> lines = getCurrentFile().getLines();
+		int lineCount = 0;
+		
+		for(Line line : lines){
+			if (line.getType() == ChangeType.NO_CHANGE){
+				lineCount++;
+			}
+		}
+		return lineCount;
+	}
+	
 //	public static void main(String[] args){
 //		
 //		java.io.File testFolder = new java.io.File("//Users//wsloth514//Desktop//testFolder");
@@ -154,5 +202,11 @@ public class Change {
 //				System.out.println(line.getLineNumber() + ": " +line.getLine() +" - " + line.getType());
 //			}
 //	
+//			
+//			System.out.println("Lines added: " + changeTest.getLineAmountAdded());
+//			System.out.println("Lines changed: " + changeTest.getLineAmountChanged());
+//			System.out.println("Lines deleted: " + changeTest.getLineAmountDeleted());
+//			System.out.println("Lines not changed: " + changeTest.getLineAmountNoChange());
+//			
 //	}
 }

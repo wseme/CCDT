@@ -52,7 +52,7 @@ public class File {
 	}
 	
 	public String getFileName(){
-		return this.filePath;
+		return this.fileName;
 	}
 	
 	public ArrayList<Line> getLines(){
@@ -66,7 +66,7 @@ public class File {
 	//TODO add setters to documentation, needed to add these methods for delete loc in Version class
 	
 	public void setFileName(String fileName){
-		this.filePath = fileName;
+		this.fileName = fileName;
 	}
 	
 	public void setLines(ArrayList<Line> lines){

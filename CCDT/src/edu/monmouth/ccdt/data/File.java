@@ -9,7 +9,8 @@ import java.util.ArrayList;
 
 public class File {
 	
-	private String fileName;
+	private String filePath;
+	public String fileName;
 	private ArrayList<Line> lines;
 	
 	public File(java.io.File file){
@@ -17,8 +18,10 @@ public class File {
 			System.err.println("Inputted file can not be null");
 			return;
 		}
+		
 		try {
-			this.fileName = file.getCanonicalPath();
+			this.filePath = file.getCanonicalPath();
+			this.fileName = file.getName();
 		} catch (IOException e1) {
 			System.err.println("Check if inputted file path is valid.");
 			e1.printStackTrace();
@@ -49,7 +52,7 @@ public class File {
 	}
 	
 	public String getFileName(){
-		return this.fileName;
+		return this.filePath;
 	}
 	
 	public ArrayList<Line> getLines(){
@@ -57,7 +60,16 @@ public class File {
 	}
 	
 	public int getNumberOfLines(){
-		//TODO implement getNumberOfLines(changetype) if that is correct
 		return lines.size();
+	}
+	
+	//TODO add setters to documentation, needed to add these methods for delete loc in Version class
+	
+	public void setFileName(String fileName){
+		this.filePath = fileName;
+	}
+	
+	public void setLines(ArrayList<Line> lines){
+		this.lines  = lines;
 	}
 }

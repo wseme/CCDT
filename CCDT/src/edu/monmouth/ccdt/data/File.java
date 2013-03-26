@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class File {
 	
 	private String filePath;
-	public String fileName;
+	private String fileName;
 	private ArrayList<Line> lines;
 	
 	public File(java.io.File file){

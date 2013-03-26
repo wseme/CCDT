@@ -29,7 +29,7 @@ public class Change {
 //		String rootDir = this.previousVersion.getDirectory().getPath();
 		
 		for(File file: files){
-			if(this.file.fileName.equals(file.fileName)){
+			if(this.file.getFileName().equals(file.getFileName())){
 				return file;
 			}
 		}
@@ -39,7 +39,7 @@ public class Change {
 	private File getCurrentFile(){
 		ArrayList<File> files = this.currentVersion.getFiles();
 		for(File file: files){
-			if(this.file.fileName.equals(file.fileName)){
+			if(this.file.getFileName().equals(file.getFileName())){
 				return file;
 			}
 		}

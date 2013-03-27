@@ -6,6 +6,7 @@ import java.util.Vector;
 
 import javax.swing.AbstractListModel;
 import javax.swing.JFileChooser;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -29,7 +30,7 @@ public class GUI extends javax.swing.JFrame implements View {
 		// TODO Auto-generated method stub
 		this.program = program;
 
-		listVersions.setModel(new VersionListModel());
+		listVersions.setModel((ListModel) new VersionListModel());
 		listVersions.setSelectedIndex(0);
 		
 		if (this.program.getVersions().size() > 0){
@@ -194,12 +195,11 @@ public class GUI extends javax.swing.JFrame implements View {
 	private javax.swing.JTree treeFiles;
 	// End of variables declaration      
 
-	private class VersionListModel extends AbstractListModel<String>{
+	private class VersionListModel extends AbstractListModel{
 
 		@Override
 		public String getElementAt(int index) {
 			return program.getVersions().get(index).getName();
-
 		}
 
 		@Override

@@ -1,22 +1,28 @@
 package edu.monmouth.ccdt.view;
 
-import java.io.File;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.AbstractListModel;
 import javax.swing.JFileChooser;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.StyleSheet;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import edu.monmouth.ccdt.controller.Controller;
+import edu.monmouth.ccdt.data.ChangeType;
+import edu.monmouth.ccdt.data.File;
+import edu.monmouth.ccdt.data.Line;
 import edu.monmouth.ccdt.data.Program;
+import edu.monmouth.ccdt.data.Version;
 
 public class GUI extends javax.swing.JFrame implements View {
 
@@ -30,11 +36,11 @@ public class GUI extends javax.swing.JFrame implements View {
 		// TODO Auto-generated method stub
 		this.program = program;
 
-		listVersions.setModel((ListModel) new VersionListModel());
+		listVersions.setModel(new VersionListModel());
 		listVersions.setSelectedIndex(0);
 		
 		if (this.program.getVersions().size() > 0){
-			treeFiles.setModel(new VersionTreeModel(this.program.getVersions().get(0).getDirectory()));
+			treeFiles.setModel(new VersionTreeModel(this.program.getVersions().get(0)));
 		}
 		else{
 			treeFiles.setModel(null);
@@ -61,19 +67,76 @@ public class GUI extends javax.swing.JFrame implements View {
 		
 		listVersions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
+		treeFiles.getSelectionModel().setSelectionMode
+        (TreeSelectionModel.SINGLE_TREE_SELECTION);
+		
 		listVersions.addListSelectionListener(new ListSelectionListener() {
 			
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
 				int selectedIndex = listVersions.getSelectedIndex();
 				if (selectedIndex >= 0){
-					treeFiles.setModel(new VersionTreeModel(GUI.this.program.getVersions().get(selectedIndex).getDirectory()));
+					treeFiles.setModel(new VersionTreeModel(GUI.this.program.getVersions().get(selectedIndex)));
 				}
 				
 			}
 		});
-	}
+		
+		treeFiles.addTreeSelectionListener(new TreeSelectionListener() {
+			
+			@Override
+			public void valueChanged(TreeSelectionEvent arg0) {
+				GUI.VersionTreeModel.TreeNode treeNode = (GUI.VersionTreeModel.TreeNode)treeFiles.getLastSelectedPathComponent();
+				
+				if (treeNode != null){
+					int previousVersionIndex = GUI.this.listVersions.getSelectedIndex() - 1;
+					if (previousVersionIndex >= 0){
+						textPanePreviousVersion.setText(loadFileIntoHTML(treeNode.getFile().getSameFileFromVersion(GUI.this.program.getVersions().get(previousVersionIndex))));
+					}
+					
+					textPaneCurrentVersion.setText(loadFileIntoHTML(treeNode.getFile()));
+				}
+			}
+		});
+		textPaneCurrentVersion.setContentType("text/html");
+		textPanePreviousVersion.setContentType("text/html");
+		this.textPaneCurrentVersion.setEditable(false);
+		this.textPanePreviousVersion.setEditable(false);
+		
+		StyleSheet ss = ((HTMLEditorKit)textPaneCurrentVersion.getEditorKit()).getStyleSheet();
+		ss.addRule(".added {color:green}");
+		ss.addRule(".deleted {color:red}");
+		HTMLEditorKit kit = (HTMLEditorKit) textPaneCurrentVersion.getEditorKit();
+		kit.setStyleSheet(ss);
 
+		textPaneCurrentVersion.setEditorKit(kit);
+	}
+	
+	private String loadFileIntoHTML(File file){
+		if (file == null){
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("<html><body><table>");
+		int lineNum = 1;
+		for (Line line : file.getLines()){
+			String classString = "";
+			if (line.getType() == ChangeType.ADDED)
+			{
+				classString = "added";
+			}
+			else if (line.getType() == ChangeType.DELETED)
+			{
+				classString = "deleted";
+			}
+			sb.append("<tr><td><span>" + lineNum + "</span></td><td class=\"" + classString + "\">").append(line.getLine()).append("</td></tr>");
+			lineNum++;
+		}
+		sb.append("</table></body></html>");
+		
+
+		return sb.toString();
+	}
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -200,6 +263,7 @@ public class GUI extends javax.swing.JFrame implements View {
 		@Override
 		public String getElementAt(int index) {
 			return program.getVersions().get(index).getName();
+
 		}
 
 		@Override
@@ -211,12 +275,42 @@ public class GUI extends javax.swing.JFrame implements View {
 	}
 	private class VersionTreeModel implements TreeModel{
 
-		private File root;
-
+		private Version version;
+		private TreeNode root;
 		private Vector<TreeModelListener> listeners = new Vector<TreeModelListener>();
 
-		public VersionTreeModel(File rootDirectory) {
-			root = rootDirectory;
+		public VersionTreeModel(Version version) {
+			this.version = version;
+			root = new TreeNode(null, "/");
+			
+			int parentDirectoryCount = version.getDirectory().getPath().split("[\\\\/]").length;
+
+			for (int fileI = 0; fileI < version.getFiles().size(); fileI++){
+				File file = version.getFiles().get(fileI);
+				String[] filePathArray = file.getFilePath().split("[\\\\/]");
+				
+				TreeNode currentDirectory = root;
+				
+	 FilePath: for (int i = parentDirectoryCount; i < filePathArray.length; i++){
+		 			String filePathPart = filePathArray[i];
+					
+					for (TreeNode treeNode : currentDirectory.children){
+						if (treeNode.toString().equals(filePathPart)){
+							currentDirectory = treeNode;
+							break FilePath;
+						}
+					}
+					
+					TreeNode treeNode;
+					if (i == filePathArray.length-1)	
+						treeNode = new TreeNode(file, filePathPart);
+					else
+						treeNode = new TreeNode(null, filePathPart);
+					
+					currentDirectory.children.add(treeNode);
+					currentDirectory = treeNode;
+				}
+			}
 		}
 
 		public Object getRoot() {
@@ -224,60 +318,30 @@ public class GUI extends javax.swing.JFrame implements View {
 		}
 
 		public Object getChild(Object parent, int index) {
-			File directory = (File) parent;
-			String[] children = directory.list();
-			return new TreeFile(directory, children[index]);
+			TreeNode treeNode = (TreeNode) parent;
+			return treeNode.children.get(index);
 		}
 
 		public int getChildCount(Object parent) {
-			File file = (File) parent;
-			if (file.isDirectory()) {
-				String[] fileList = file.list();
-				if (fileList != null)
-					return file.list().length;
-			}
-			return 0;
+			TreeNode treeNode = (TreeNode) parent;
+			return treeNode.children.size();
 		}
 
 		public boolean isLeaf(Object node) {
-			File file = (File) node;
-			return file.isFile();
+			TreeNode treeNode = (TreeNode) node;
+			return treeNode.children.size() == 0;
 		}
 
 		public int getIndexOfChild(Object parent, Object child) {
-			File directory = (File) parent;
-			File file = (File) child;
-			String[] children = directory.list();
-			for (int i = 0; i < children.length; i++) {
-				if (file.getName().equals(children[i])) {
-					return i;
-				}
-			}
-			return -1;
-
+			TreeNode parentNode = (TreeNode) parent;
+			TreeNode childNode = (TreeNode) child;
+			return parentNode.children.indexOf(childNode);
 		}
 
 		public void valueForPathChanged(TreePath path, Object value) {
-			File oldFile = (File) path.getLastPathComponent();
-			String fileParentPath = oldFile.getParent();
-			String newFileName = (String) value;
-			File targetFile = new File(fileParentPath, newFileName);
-			oldFile.renameTo(targetFile);
-			File parent = new File(fileParentPath);
-			int[] changedChildrenIndices = { getIndexOfChild(parent, targetFile) };
-			Object[] changedChildren = { targetFile };
-			fireTreeNodesChanged(path.getParentPath(), changedChildrenIndices, changedChildren);
-
 		}
 
 		private void fireTreeNodesChanged(TreePath parentPath, int[] indices, Object[] children) {
-			TreeModelEvent event = new TreeModelEvent(this, parentPath, indices, children);
-			Iterator iterator = listeners.iterator();
-			TreeModelListener listener = null;
-			while (iterator.hasNext()) {
-				listener = (TreeModelListener) iterator.next();
-				listener.treeNodesChanged(event);
-			}
 		}
 
 		public void addTreeModelListener(TreeModelListener listener) {
@@ -288,17 +352,29 @@ public class GUI extends javax.swing.JFrame implements View {
 			listeners.remove(listener);
 		}
 
-		private class TreeFile extends File {
-			private static final long serialVersionUID = 8767823851459164053L;
-
-			public TreeFile(File parent, String child) {
-				super(parent, child);
+		public class TreeNode{
+			ArrayList<TreeNode> children = new ArrayList<TreeNode>();
+			File file;
+			String title;
+			public TreeNode(File file, String title) {
+				this.file = file;
+				this.title = title;
 			}
-
+			
+			@Override
 			public String toString() {
-				return getName();
+				if (title != null)
+					return title;
+				else{
+					String[] fileParts = file.getFileName().split("\\");
+//					System.out.println(fileParts[fileParts.length-1]);
+					return fileParts[fileParts.length-1];
+				}
 			}
-
+			
+			public File getFile(){
+				return file;
+			}
 		}
 	}
 }

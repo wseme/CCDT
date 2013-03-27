@@ -62,6 +62,10 @@ public class File {
 		return this.fileName;
 	}
 	
+	public String getFilePath(){
+		return this.filePath;
+	}
+	
 	public ArrayList<Line> getLines(){
 		return lines;
 	}
@@ -78,5 +82,14 @@ public class File {
 	
 	public void setLines(ArrayList<Line> lines){
 		this.lines  = lines;
+	}
+
+	public File getSameFileFromVersion(Version version) {
+		for (File otherFile : version.getFiles()){
+			if (otherFile.fileName.equals(this.fileName)){
+				return otherFile;
+			}
+		}
+		return null;
 	}
 }

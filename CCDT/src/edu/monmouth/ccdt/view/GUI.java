@@ -94,7 +94,6 @@ public class GUI extends javax.swing.JFrame implements View {
 						textPanePreviousVersion.setText(loadFileIntoHTML(treeNode.getFile().getSameFileFromVersion(GUI.this.program.getVersions().get(previousVersionIndex))));
 					}else{
 						textPanePreviousVersion.setText("");
-						
 					}
 					
 					textPaneCurrentVersion.setText(loadFileIntoHTML(treeNode.getFile()));
@@ -194,6 +193,11 @@ public class GUI extends javax.swing.JFrame implements View {
 		menuFile.add(jMenuItem1);
 
 		jMenuItem2.setText("Exit");
+		jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				exit();
+			}
+		});
 		menuFile.add(jMenuItem2);
 
 		jMenuBar1.add(menuFile);

@@ -106,6 +106,7 @@ public class GUI extends javax.swing.JFrame implements View {
 		StyleSheet ss = ((HTMLEditorKit)textPaneCurrentVersion.getEditorKit()).getStyleSheet();
 		ss.addRule(".added {color:green}");
 		ss.addRule(".deleted {color:red}");
+		ss.addRule(".changed {color:blue}");
 		HTMLEditorKit kit = (HTMLEditorKit) textPaneCurrentVersion.getEditorKit();
 		kit.setStyleSheet(ss);
 
@@ -121,14 +122,14 @@ public class GUI extends javax.swing.JFrame implements View {
 		int lineNum = 1;
 		for (Line line : file.getLines()){
 			String classString = "";
-			if (line.getType() == ChangeType.ADDED)
-			{
+			if (line.getType() == ChangeType.ADDED){
 				classString = "added";
-			}
-			else if (line.getType() == ChangeType.DELETED)
-			{
+			}else if (line.getType() == ChangeType.DELETED){
 				classString = "deleted";
+			}else if (line.getType() == ChangeType.CHANGED){
+				classString = "changed";
 			}
+			
 			sb.append("<tr><td><span>" + lineNum + "</span></td><td class=\"" + classString + "\">").append(line.getLine()).append("</td></tr>");
 			lineNum++;
 		}

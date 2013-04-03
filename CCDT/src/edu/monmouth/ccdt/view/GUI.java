@@ -366,9 +366,7 @@ public class GUI extends javax.swing.JFrame implements View {
 				if (title != null)
 					return title;
 				else{
-					String[] fileParts = file.getFileName().split("\\");
-//					System.out.println(fileParts[fileParts.length-1]);
-					return fileParts[fileParts.length-1];
+					return file.getFileName();
 				}
 			}
 			

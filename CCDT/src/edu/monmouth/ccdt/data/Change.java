@@ -50,7 +50,7 @@ public class Change {
 		File previousFile = getPreviousFile();
 		File currentFile = getCurrentFile();
 		
-		//new file
+		//new file, had to also added in Program
 		if(previousFile == null && currentFile != null){
 			for(Line line: currentFile.getLines()){
 				line.setType(ChangeType.ADDED);

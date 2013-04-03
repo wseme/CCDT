@@ -92,6 +92,9 @@ public class GUI extends javax.swing.JFrame implements View {
 					int previousVersionIndex = GUI.this.listVersions.getSelectedIndex() - 1;
 					if (previousVersionIndex >= 0){
 						textPanePreviousVersion.setText(loadFileIntoHTML(treeNode.getFile().getSameFileFromVersion(GUI.this.program.getVersions().get(previousVersionIndex))));
+					}else{
+						textPanePreviousVersion.setText("");
+						
 					}
 					
 					textPaneCurrentVersion.setText(loadFileIntoHTML(treeNode.getFile()));
@@ -301,7 +304,7 @@ public class GUI extends javax.swing.JFrame implements View {
 							break FilePath;
 						}
 					}
-					
+	
 					TreeNode treeNode;
 					if (i == filePathArray.length-1)	
 						treeNode = new TreeNode(file, filePathPart);

@@ -16,10 +16,18 @@ public class Program {
 		Version versionToAdd = new Version(version, fileFolder);
 		
 		if (versions.size() > 0) {
+			//create change
 			for (File file : versionToAdd.getFiles()) {
 				Change change = new Change(versions.get(versions.size() - 1),
 						versionToAdd, file);
 				versionToAdd.addChange(change);
+			}
+		}else{
+			//set all lines to added for initial version
+			for(File file: versionToAdd.getFiles()){
+				for(Line line: file.getLines()){
+					line.setType(ChangeType.ADDED);
+				}
 			}
 		}
 		
@@ -41,7 +49,7 @@ public class Program {
 //		for(Version version: program.getVersions()){
 //			for(File file: version.getFiles()){
 //				for(Line line: file.getLines()){
-//				System.out.println(version.getName() + ":" +file.getFileName() + " - " + line.getLineNumber() + ") " + line.getType().name());
+//				System.out.println(version.getName() + ":" +file.getFileName() + " - " + line.getLineNumber() + ") " + line.getType().name() + " > " + line.getLine() );
 //				}
 //			}
 //		}

@@ -14,6 +14,8 @@ public class Program {
 		int version = versions.size() + 1;
 		
 		versions.add(new Version(version, fileFolder));
+		
+		
 	}
 	
 	public ArrayList<Version> getVersions(){

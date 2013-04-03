@@ -32,6 +32,7 @@ public class Version {
 		this.number = number;
 		this.dateUploaded = new DateTime();
 		this.directory = fileFolder;
+		this.changes = new ArrayList<Change>();
 		traverseFiles(fileFolder.listFiles());
 		
 	}
@@ -73,8 +74,13 @@ public class Version {
 	public ArrayList<Change> getChange(){
 		return changes;
 	}
+	
+	public void addChange(Change change){
+		this.changes.add(change);
+	}
 
 	public java.io.File getDirectory() {
 		return directory;
 	}
+
 }

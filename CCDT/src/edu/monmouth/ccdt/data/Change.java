@@ -181,32 +181,32 @@ public class Change {
 		return lineCount;
 	}
 	
-//	public static void main(String[] args){
-//		
-//		java.io.File testFolder = new java.io.File("//Users//wsloth514//Desktop//testFolder");
-//		System.out.println(testFolder.getName());
-//		Version version = new Version(1, testFolder);
+	public static void main(String[] args){
+		
+		java.io.File testFolder = new java.io.File("//Users//wsloth514//Desktop//testFolder");
+		System.out.println(testFolder.getName());
+		Version version = new Version(1, testFolder);
 //		for(File file: version.getFiles()){
 //			System.out.println(file.getFileName());
 //		}
-//
-//		java.io.File testFolder2 = new java.io.File("//Users//wsloth514//Desktop//testFolder2");
-//		System.out.println(testFolder2.getName());
-//		Version version2= new Version(2, testFolder2);
-//		
-//		File testFile = new File(new java.io.File("//Users//wsloth514//Desktop//testFolder2//testFile1.txt"));
-//		Change changeTest = new Change(version, version2, testFile);
-//		
-//		File v2File = changeTest.getCurrentFile();
-//			for(Line line: v2File.getLines()){
-//				System.out.println(line.getLineNumber() + ": " +line.getLine() +" - " + line.getType());
-//			}
-//	
-//			
-//			System.out.println("Lines added: " + changeTest.getLineAmountAdded());
-//			System.out.println("Lines changed: " + changeTest.getLineAmountChanged());
-//			System.out.println("Lines deleted: " + changeTest.getLineAmountDeleted());
-//			System.out.println("Lines not changed: " + changeTest.getLineAmountNoChange());
-//			
-//	}
+
+		java.io.File testFolder2 = new java.io.File("//Users//wsloth514//Desktop//testFolder2");
+		System.out.println(testFolder2.getName());
+		Version version2= new Version(2, testFolder2);
+		
+		File testFile = new File(new java.io.File("//Users//wsloth514//Desktop//testFolder2//testFile1.txt"));
+		Change changeTest = new Change(version, version2, testFile);
+		
+		File v2File = changeTest.getCurrentFile();
+			for(Line line: v2File.getLines()){
+				System.out.println(line.getLineNumber() + ": " +line.getLine() +" - " + line.getType());
+			}
+	
+			
+			System.out.println("Lines added: " + changeTest.getLineAmountAdded());
+			System.out.println("Lines changed: " + changeTest.getLineAmountChanged());
+			System.out.println("Lines deleted: " + changeTest.getLineAmountDeleted());
+			System.out.println("Lines not changed: " + changeTest.getLineAmountNoChange());
+			
+	}
 }

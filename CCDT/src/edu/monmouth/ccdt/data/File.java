@@ -26,7 +26,6 @@ public class File {
 		
 		this.fileName = file.getName();
 		
-		
 		try {
 			this.filePath = file.getCanonicalPath();			
 		} catch (IOException e1) {
@@ -62,9 +61,15 @@ public class File {
 		return this.fileName;
 	}
 	
+	
+	public void setFileName(String fileName){
+		this.fileName = fileName;
+	}
+	
 	public String getFilePath(){
 		return this.filePath;
 	}
+	
 	
 	public ArrayList<Line> getLines(){
 		return lines;
@@ -72,12 +77,6 @@ public class File {
 	
 	public int getNumberOfLines(){
 		return lines.size();
-	}
-	
-	//TODO add setters to documentation, needed to add these methods for delete loc in Version class
-	
-	public void setFileName(String fileName){
-		this.fileName = fileName;
 	}
 	
 	public void setLines(ArrayList<Line> lines){

@@ -13,10 +13,38 @@ public class Program {
 	public void addVersion(java.io.File fileFolder){
 		int version = versions.size() + 1;
 		
-		versions.add(new Version(version, fileFolder));
+		Version versionToAdd = new Version(version, fileFolder);
+		
+		if (versions.size() > 0) {
+			for (File file : versionToAdd.getFiles()) {
+				Change change = new Change(versions.get(versions.size() - 1),
+						versionToAdd, file);
+				versionToAdd.addChange(change);
+			}
+		}
+		
+		versions.add(versionToAdd);
+		
+		
 	}
 	
 	public ArrayList<Version> getVersions(){
 		return versions;
 	}
+	
+//	public static void main(String[] args){
+//		Program program = new Program();
+//		program.addVersion( new java.io.File("//Users//wsloth514//Desktop//testFolder"));
+//
+//		program.addVersion( new java.io.File("//Users//wsloth514//Desktop//testFolder2"));
+//		
+//		for(Version version: program.getVersions()){
+//			for(File file: version.getFiles()){
+//				for(Line line: file.getLines()){
+//				System.out.println(version.getName() + ":" +file.getFileName() + " - " + line.getLineNumber() + ") " + line.getType().name());
+//				}
+//			}
+//		}
+//	}
+	
 }

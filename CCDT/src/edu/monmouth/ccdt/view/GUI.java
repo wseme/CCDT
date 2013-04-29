@@ -1,13 +1,18 @@
 package edu.monmouth.ccdt.view;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
-import javax.swing.AbstractListModel;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -18,6 +23,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import edu.monmouth.ccdt.controller.Controller;
+import edu.monmouth.ccdt.data.Change;
 import edu.monmouth.ccdt.data.ChangeType;
 import edu.monmouth.ccdt.data.File;
 import edu.monmouth.ccdt.data.Line;
@@ -29,20 +35,145 @@ public class GUI extends javax.swing.JFrame implements View {
 	private static final long serialVersionUID = -7471359688824283973L;
 	private Program program;
 	private Controller controller;
+	private JPopupMenu popupMenu;
+	
+	@SuppressWarnings("unused")
+	private GUI() {
+		
+	}
+	
+	public GUI(Controller controller) {
+		initComponents();
+		
+		this.controller = controller;
+		
+		createAndSetTreeSelectionListeners();
+		
+		initializeHTMLTextPanes();
+	}
+
+	private void initializeHTMLTextPanes() {
+		textPaneCurrentVersion.setContentType("text/html");
+		textPanePreviousVersion.setContentType("text/html");
+		this.textPaneCurrentVersion.setEditable(false);
+		this.textPanePreviousVersion.setEditable(false);
+		
+		StyleSheet ss = ((HTMLEditorKit)textPaneCurrentVersion.getEditorKit()).getStyleSheet();
+		ss.addRule(".added {color:green}");
+		ss.addRule(".deleted {color:red}");
+		ss.addRule(".changed {color:blue}");
+		HTMLEditorKit kit = (HTMLEditorKit) textPaneCurrentVersion.getEditorKit();
+		kit.setStyleSheet(ss);
+
+		textPaneCurrentVersion.setEditorKit(kit);
+	}
+
+	private void createAndSetTreeSelectionListeners() {
+		treeVersions.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		treeFiles.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		
+		treeVersions.addTreeSelectionListener(new TreeSelectionListener() {
+			
+			@Override
+			public void valueChanged(TreeSelectionEvent e) {
+				Object chosenObject = treeVersions.getLastSelectedPathComponent();
+				if (chosenObject instanceof Version){
+					treeFiles.setModel(new VersionTreeModel((Version)chosenObject));
+					textPaneCurrentVersion.setText(null);
+					textPanePreviousVersion.setText(null);
+				}
+				else{
+					//TODO Display the change.
+				}
+			}
+		});
+		
+		popupMenu = new JPopupMenu();
+		JMenuItem comment = new JMenuItem("Comment");
+		comment.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				JDialog commentDialog = new JDialog(GUI.this);
+				
+				ChangeLabel changeLabel = new ChangeLabel(((Version)treeVersions.getLastSelectedPathComponent()).getChangeComment());
+				commentDialog.setContentPane(changeLabel);
+				commentDialog.pack();
+				
+				commentDialog.setLocationRelativeTo(GUI.this);
+				commentDialog.setResizable(false);
+				
+				commentDialog.setVisible(true);
+			}
+		});
+		popupMenu.add(comment);
+		
+		treeVersions.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				if (SwingUtilities.isRightMouseButton(e)){
+					int row = treeVersions.getClosestRowForLocation(e.getX(), e.getY());
+			        treeVersions.setSelectionRow(row);
+			        if (treeVersions.getLastSelectedPathComponent() instanceof Version){
+				        popupMenu.show(e.getComponent(), e.getX(), e.getY());			        	
+			        }
+
+				}
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+			}
+		});
+		
+		treeFiles.addTreeSelectionListener(new TreeSelectionListener() {
+			
+			@Override
+			public void valueChanged(TreeSelectionEvent arg0) {
+				GUI.VersionTreeModel.TreeNode treeNode = (GUI.VersionTreeModel.TreeNode)treeFiles.getLastSelectedPathComponent();
+				
+				if (treeNode != null){
+					int previousVersionIndex = treeNode.file.getVersion().getNumber()-2;//GUI.this.treeFiles.getSelectedIndex() - 1;
+					if (previousVersionIndex >= 0){
+						textPanePreviousVersion.setText(loadFileIntoHTML(treeNode.getFile().getSameFileFromVersion(GUI.this.program.getVersions().get(previousVersionIndex))));
+					}else{
+						textPanePreviousVersion.setText("");
+					}
+					
+					textPaneCurrentVersion.setText(loadFileIntoHTML(treeNode.getFile()));
+				}
+			}
+		});
+		
+		
+	}
 	
 	@Override
 	public void loadProgram(Program program) {
 		this.program = program;
-
-		listVersions.setModel(new VersionListModel());
-		listVersions.setSelectedIndex(0);
-		
+		textPaneCurrentVersion.setText(null);
+		textPanePreviousVersion.setText(null);
+		treeVersions.setModel(null);
+		treeFiles.setModel(null);
 		if (this.program.getVersions().size() > 0){
-			treeFiles.setModel(new VersionTreeModel(this.program.getVersions().get(0)));
+			treeVersions.setModel(new VersionListModel());
 		}
-		else{
-			treeFiles.setModel(null);
-		}
+		
 	}
 
 	private void exit(){
@@ -58,60 +189,7 @@ public class GUI extends javax.swing.JFrame implements View {
 			this.controller.addVersion(chooser.getSelectedFile());
 		}
 	}
-	public GUI(Controller controller) {
-		initComponents();
-		
-		this.controller = controller;
-		
-		listVersions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-		treeFiles.getSelectionModel().setSelectionMode
-        (TreeSelectionModel.SINGLE_TREE_SELECTION);
-		
-		listVersions.addListSelectionListener(new ListSelectionListener() {
-			
-			@Override
-			public void valueChanged(ListSelectionEvent arg0) {
-				int selectedIndex = listVersions.getSelectedIndex();
-				if (selectedIndex >= 0){
-					treeFiles.setModel(new VersionTreeModel(GUI.this.program.getVersions().get(selectedIndex)));
-				}
-				
-			}
-		});
-		
-		treeFiles.addTreeSelectionListener(new TreeSelectionListener() {
-			
-			@Override
-			public void valueChanged(TreeSelectionEvent arg0) {
-				GUI.VersionTreeModel.TreeNode treeNode = (GUI.VersionTreeModel.TreeNode)treeFiles.getLastSelectedPathComponent();
-				
-				if (treeNode != null){
-					int previousVersionIndex = GUI.this.listVersions.getSelectedIndex() - 1;
-					if (previousVersionIndex >= 0){
-						textPanePreviousVersion.setText(loadFileIntoHTML(treeNode.getFile().getSameFileFromVersion(GUI.this.program.getVersions().get(previousVersionIndex))));
-					}else{
-						textPanePreviousVersion.setText("");
-					}
-					
-					textPaneCurrentVersion.setText(loadFileIntoHTML(treeNode.getFile()));
-				}
-			}
-		});
-		textPaneCurrentVersion.setContentType("text/html");
-		textPanePreviousVersion.setContentType("text/html");
-		this.textPaneCurrentVersion.setEditable(false);
-		this.textPanePreviousVersion.setEditable(false);
-		
-		StyleSheet ss = ((HTMLEditorKit)textPaneCurrentVersion.getEditorKit()).getStyleSheet();
-		ss.addRule(".added {color:green}");
-		ss.addRule(".deleted {color:red}");
-		ss.addRule(".changed {color:blue}");
-		HTMLEditorKit kit = (HTMLEditorKit) textPaneCurrentVersion.getEditorKit();
-		kit.setStyleSheet(ss);
-
-		textPaneCurrentVersion.setEditorKit(kit);
-	}
+	
 	
 	private String loadFileIntoHTML(File file){
 		if (file == null){
@@ -153,7 +231,7 @@ public class GUI extends javax.swing.JFrame implements View {
 		jScrollPane3 = new javax.swing.JScrollPane();
 		treeFiles = new javax.swing.JTree();
 		jScrollPane4 = new javax.swing.JScrollPane();
-		listVersions = new javax.swing.JList();
+		treeVersions = new javax.swing.JTree();
 		labelCurrentVersion = new javax.swing.JLabel();
 		labelPreviousVersion1 = new javax.swing.JLabel();
 		jMenuBar1 = new javax.swing.JMenuBar();
@@ -171,7 +249,7 @@ public class GUI extends javax.swing.JFrame implements View {
 
 		jScrollPane3.setViewportView(treeFiles);
 
-		jScrollPane4.setViewportView(listVersions);
+		jScrollPane4.setViewportView(treeVersions);
 
 		labelCurrentVersion.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 		labelCurrentVersion.setText("Current Version");
@@ -254,34 +332,75 @@ public class GUI extends javax.swing.JFrame implements View {
 	private javax.swing.JScrollPane jScrollPane4;
 	private javax.swing.JLabel labelCurrentVersion;
 	private javax.swing.JLabel labelPreviousVersion1;
-	private javax.swing.JList listVersions;
+	private JTree treeVersions;
 	private javax.swing.JMenu menuFile;
 	private javax.swing.JTextPane textPaneCurrentVersion;
 	private javax.swing.JTextPane textPanePreviousVersion;
 	private javax.swing.JTree treeFiles;    
 
-	private class VersionListModel extends AbstractListModel{
-
+	private class VersionListModel implements TreeModel{
+		private Vector<TreeModelListener> listeners = new Vector<TreeModelListener>();
+		
 		@Override
-		public String getElementAt(int index) {
-			return program.getVersions().get(index).getName();
-
+		public void addTreeModelListener(TreeModelListener listener) {
+			listeners.add(listener);
 		}
 
 		@Override
-		public int getSize() {
-			return program.getVersions().size();
+		public Object getChild(Object arg0, int arg1) {
+			if (arg0 instanceof Version){
+				return ((Version)arg0).getChanges().get(arg1);
+			}
+			else{
+				return GUI.this.program.getVersions().get(arg1);
+			}
+		}
+
+		@Override
+		public int getChildCount(Object arg0) {
+			if (arg0 instanceof Version)
+				return ((Version)arg0).getChanges().size();
+			else
+				return GUI.this.program.getVersions().size();
+		}
+
+		@Override
+		public int getIndexOfChild(Object arg0, Object arg1) {
+			if (arg0 instanceof Version)
+				return ((Version)arg0).getChanges().indexOf(arg1);
+			else
+				return GUI.this.program.getVersions().indexOf(arg1);
+		}
+
+		@Override
+		public Object getRoot() {
+			return "Versions";
+		}
+
+		@Override
+		public boolean isLeaf(Object arg0) {
+			return arg0 instanceof Change || (arg0 instanceof Version && ((Version)arg0).getChanges().size() == 0);
+		}
+
+		@Override
+		public void removeTreeModelListener(TreeModelListener arg0) {
+			listeners.remove(arg0);
+			
+		}
+
+		@Override
+		public void valueForPathChanged(TreePath arg0, Object arg1) {
+			// TODO Auto-generated method stub
+			
 		}
 
 	}
 	private class VersionTreeModel implements TreeModel{
 
-		private Version version;
 		private TreeNode root;
 		private Vector<TreeModelListener> listeners = new Vector<TreeModelListener>();
 
 		public VersionTreeModel(Version version) {
-			this.version = version;
 			root = new TreeNode(null, "/");
 			
 			int parentDirectoryCount = version.getDirectory().getPath().split("[\\\\/]").length;
@@ -342,8 +461,6 @@ public class GUI extends javax.swing.JFrame implements View {
 		public void valueForPathChanged(TreePath path, Object value) {
 		}
 
-		private void fireTreeNodesChanged(TreePath parentPath, int[] indices, Object[] children) {
-		}
 
 		public void addTreeModelListener(TreeModelListener listener) {
 			listeners.add(listener);

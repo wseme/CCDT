@@ -63,7 +63,7 @@ public class Change {
 			
 			//create new file, copy previous and mark all as removed.
 			java.io.File temp = new java.io.File(previousFile.getFileName());
-			File deletedFile = new File(temp);
+			File deletedFile = new File(temp, previousFile.getVersion());
 			deletedFile.setLines(previousFile.getLines());
 			
 			for(Line line: deletedFile.getLines()){
@@ -181,6 +181,11 @@ public class Change {
 		return lineCount;
 	}
 	
+	@Override
+	public String toString() {
+		return "Change " + this.currentVersion.getChanges().indexOf(this);
+	}
+	
 	public static void main(String[] args){
 		
 		java.io.File testFolder = new java.io.File("//Users//wsloth514//Desktop//testFolder");
@@ -194,7 +199,7 @@ public class Change {
 		System.out.println(testFolder2.getName());
 		Version version2= new Version(2, testFolder2);
 		
-		File testFile = new File(new java.io.File("//Users//wsloth514//Desktop//testFolder2//testFile1.txt"));
+		File testFile = new File(new java.io.File("//Users//wsloth514//Desktop//testFolder2//testFile1.txt"), version2);
 		Change changeTest = new Change(version, version2, testFile);
 		
 		File v2File = changeTest.getCurrentFile();

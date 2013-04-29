@@ -8,11 +8,10 @@ import org.joda.time.DateTime;
 public class Version {
 
 	private int number;
-	private DateTime dateUploaded;
 	private java.io.File directory;
 	private ArrayList<File> files = new ArrayList<File>();
 	private ArrayList<Change> changes;
-	
+	private ChangeComment versionComment;
 	public Version(int number, java.io.File fileFolder){		
 		
 		if(number <=0){
@@ -30,7 +29,6 @@ public class Version {
 			return;	
 		}
 		this.number = number;
-		this.dateUploaded = new DateTime();
 		this.directory = fileFolder;
 		this.changes = new ArrayList<Change>();
 		traverseFiles(fileFolder.listFiles());
@@ -49,7 +47,7 @@ public class Version {
 	            traverseFiles(file.listFiles()); // Calls same method again.
 	        } else {
 	            System.out.println("File: " + file.getName());
-	            File fileModel = new File(file);
+	            File fileModel = new File(file, this);
 	            this.files.add(fileModel);
 	        }
 	    }
@@ -63,15 +61,10 @@ public class Version {
 	public int getNumber(){
 		return number;
 	}
-	
-	public DateTime getDateUploaded(){
-		return dateUploaded;
-	}
-	
 	public ArrayList<File> getFiles(){
 		return files;
 	}
-	public ArrayList<Change> getChange(){
+	public ArrayList<Change> getChanges(){
 		return changes;
 	}
 	
@@ -82,5 +75,16 @@ public class Version {
 	public java.io.File getDirectory() {
 		return directory;
 	}
-
+	
+	@Override
+	public String toString() {
+		return "Version " +  number;
+	}
+	
+	public ChangeComment getChangeComment(){
+		if (this.versionComment == null){
+			this.versionComment = new ChangeComment(this);
+		}
+		return this.versionComment;
+	}
 }

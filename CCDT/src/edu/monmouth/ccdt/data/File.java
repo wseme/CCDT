@@ -12,8 +12,9 @@ public class File {
 	private String filePath;
 	private String fileName;
 	private ArrayList<Line> lines;
-	
-	public File(java.io.File file){
+	private Version version;
+	public File(java.io.File file, Version version){
+		
 		if(file == null){
 			System.err.println("Inputted file can not be null");
 			return;
@@ -25,6 +26,7 @@ public class File {
 		}
 		
 		this.fileName = file.getName();
+		this.version = version;
 		
 		try {
 			this.filePath = file.getCanonicalPath();			
@@ -90,5 +92,10 @@ public class File {
 			}
 		}
 		return null;
+	}
+
+	public Version getVersion() {
+		// TODO Auto-generated method stub
+		return this.version;
 	}
 }

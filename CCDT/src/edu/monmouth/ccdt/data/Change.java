@@ -58,8 +58,26 @@ public class Change {
 			return;
 		}
 
+		// current file is deleted if all lines are DELETED, remove file and do not perform change
+		ArrayList<Line> lines = previousFile.getLines();
+		boolean isDeletedFile = true;
+		for (Line line : lines) {
+			if (line.getType() != ChangeType.DELETED) {
+				isDeletedFile = false;
+				break;
+			}
+		}
+		if (isDeletedFile) {
+			// file is deleted in previous, delete current File
+			if (currentFile != null){
+				currentVersion.getFiles().remove(previousFile); //all deleted, remove file
+				return;
+			}
+		}
+		
+		
 		//deleted file
-		if(currentFile == null){
+		if(currentFile == null || currentFile.getLines().size() <=0){
 			
 			//create new file, copy previous and mark all as removed.
 			java.io.File temp = new java.io.File(previousFile.getFileName());
@@ -74,6 +92,7 @@ public class Change {
 			return;
 		}
 		
+		
 		diff();
 		
 	}
@@ -82,10 +101,7 @@ public class Change {
 	
 		File previousFile = getPreviousFile();
 		File currentFile = getCurrentFile();
-		
-//		System.out.println("Previous File name:" + previousFile.getFileName());
-//		System.out.println("Current File name:" + currentFile.getFileName());
-		
+	
 		ArrayList<String> prevBuilder = new ArrayList<String>();
 			for(Line prevLine: previousFile.getLines()){
 				prevBuilder.add(prevLine.getLine());
@@ -105,8 +121,6 @@ public class Change {
 
 		int index = 0;
 		for(DiffRow diffRow : rows){
-//			System.out.println("TAG: " + diffRow.getTag());
-
 			//XXX need to do this before getting the index, r else it will through array out of bounds
 			if(diffRow.getTag() == Tag.DELETE){
 				//Needs to be done because line doesn't exist in current file
@@ -121,6 +135,13 @@ public class Change {
 				//if old line is 0 and new line contains info, set it insert, not change
 				diffRow.setTag(Tag.INSERT);//don't mark these change, mark insert
 			}
+			
+			
+			//insert at end
+			if(index >= currentLines.size()){
+				currentLines.add(new Line(diffRow.getNewLine(), index));
+				continue;
+			}
 			Line line = currentLines.get(index);
 			
 			if(diffRow.getTag() == Tag.CHANGE){
@@ -132,6 +153,9 @@ public class Change {
 		}
 	}
 	
+	public File getFile(){
+		return file;
+	}
 	
 	public int getLineAmountAdded(){
 		ArrayList<Line> lines = getCurrentFile().getLines();
@@ -186,32 +210,32 @@ public class Change {
 		return "Change " + this.currentVersion.getChanges().indexOf(this);
 	}
 	
-	public static void main(String[] args){
-		
-		java.io.File testFolder = new java.io.File("//Users//wsloth514//Desktop//testFolder");
-		System.out.println(testFolder.getName());
-		Version version = new Version(1, testFolder);
-//		for(File file: version.getFiles()){
-//			System.out.println(file.getFileName());
-//		}
-
-		java.io.File testFolder2 = new java.io.File("//Users//wsloth514//Desktop//testFolder2");
-		System.out.println(testFolder2.getName());
-		Version version2= new Version(2, testFolder2);
-		
-		File testFile = new File(new java.io.File("//Users//wsloth514//Desktop//testFolder2//testFile1.txt"), version2);
-		Change changeTest = new Change(version, version2, testFile);
-		
-		File v2File = changeTest.getCurrentFile();
-			for(Line line: v2File.getLines()){
-				System.out.println(line.getLineNumber() + ": " +line.getLine() +" - " + line.getType());
-			}
-	
-			
-			System.out.println("Lines added: " + changeTest.getLineAmountAdded());
-			System.out.println("Lines changed: " + changeTest.getLineAmountChanged());
-			System.out.println("Lines deleted: " + changeTest.getLineAmountDeleted());
-			System.out.println("Lines not changed: " + changeTest.getLineAmountNoChange());
-			
-	}
+//	public static void main(String[] args){
+//		
+//		java.io.File testFolder = new java.io.File("//Users//wsloth514//Desktop//testFolder");
+//		System.out.println(testFolder.getName());
+//		Version version = new Version(1, testFolder);
+////		for(File file: version.getFiles()){
+////			System.out.println(file.getFileName());
+////		}
+//
+//		java.io.File testFolder2 = new java.io.File("//Users//wsloth514//Desktop//testFolder2");
+//		System.out.println(testFolder2.getName());
+//		Version version2= new Version(2, testFolder2);
+//		
+//		File testFile = new File(new java.io.File("//Users//wsloth514//Desktop//testFolder2//testFile1.txt"), version2);
+//		Change changeTest = new Change(version, version2, testFile);
+//		
+//		File v2File = changeTest.getCurrentFile();
+//			for(Line line: v2File.getLines()){
+//				System.out.println(line.getLineNumber() + ": " +line.getLine() +" - " + line.getType());
+//			}
+//	
+//			
+//			System.out.println("Lines added: " + changeTest.getLineAmountAdded());
+//			System.out.println("Lines changed: " + changeTest.getLineAmountChanged());
+//			System.out.println("Lines deleted: " + changeTest.getLineAmountDeleted());
+//			System.out.println("Lines not changed: " + changeTest.getLineAmountNoChange());
+//			
+//	}
 }

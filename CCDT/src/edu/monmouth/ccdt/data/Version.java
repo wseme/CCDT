@@ -1,6 +1,11 @@
 package edu.monmouth.ccdt.data;
 
 import edu.monmouth.ccdt.data.File;
+
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import org.joda.time.DateTime;
@@ -12,6 +17,7 @@ public class Version {
 	private ArrayList<File> files = new ArrayList<File>();
 	private ArrayList<Change> changes;
 	private ChangeComment versionComment;
+	
 	public Version(int number, java.io.File fileFolder){		
 		
 		if(number <=0){
@@ -64,6 +70,127 @@ public class Version {
 	public ArrayList<File> getFiles(){
 		return files;
 	}
+	
+	public void addFile(File file){
+		if(file != null && !files.contains(file)){
+			files.add(file);
+		}
+	}
+	
+	public void removeFile(File file){
+		if(file != null && !files.contains(file)){
+			//check by file name
+			for(File checkFile: files){
+				if(file.getFilePath().equals(checkFile.getFilePath())){
+					files.remove(file);
+					return;
+				}
+			}
+			
+		}
+	}
+	
+
+	public String getVersionChangeComment(){
+		
+		//TODO integrate with verisionComment
+		int totalAdded     = 0;
+		int totalChanged    = 0;
+		int totalDeleted   = 0;
+		int totalNotChanged= 0;
+		
+		for(Change change : changes){
+			totalAdded      += change.getLineAmountAdded();
+			totalChanged    += change.getLineAmountChanged();
+			totalDeleted    += change.getLineAmountDeleted();
+			totalNotChanged += change.getLineAmountNoChange();
+		
+		}
+		
+		return "//" + getName() + " date uploaded:" + versionComment.date + " | Total line counts - Added:"
+				+ totalAdded + ", Deleted:" + totalDeleted + ", Changed:" + totalChanged + ", Not Changed:" + totalNotChanged;
+	}
+	
+	public String createOverallVersionReport(){
+		
+		//TODO integrate with verisionComment
+		int totalAdded     = 0;
+		int totalChanged   = 0;
+		int totalDeleted   = 0;
+		int totalNotChanged= 0;
+		
+		for(Change change : getChanges()){
+			totalAdded      += change.getLineAmountAdded();
+			totalChanged    += change.getLineAmountChanged();
+			totalDeleted    += change.getLineAmountDeleted();
+			totalNotChanged += change.getLineAmountNoChange();
+		}
+		
+		return getName() + " date uploaded:" + versionComment.date + " | Total line counts - Added:"
+				+ totalAdded + ", Deleted:" + totalDeleted + ", Changed:" + totalChanged + ", Not Changed:" + totalNotChanged;
+	
+	}
+	
+	public void writeCommentsToFiles(java.io.File fileFolder){
+		//get changes from each file
+		//write version comment to file in the header
+		//write comments to file about each change.
+		
+		if (!fileFolder.isDirectory()){
+			System.err.println("Inputted file must be a directory.");
+			return;	
+		}
+		
+		for(File file: files){
+			
+			ArrayList<Line> lines = file.getLines();
+			
+			String fileName = fileFolder.getPath() + System.getProperty("file.separator") +file.getFileName();
+			
+			System.out.println("Writing file: " + fileName); 
+			
+			//write file
+			java.io.File newFile = new java.io.File(fileName);
+			
+			try {
+				// if file doesnt exists, then create it
+				if (!newFile.exists()) {
+					if(newFile.createNewFile()){
+
+						FileOutputStream fstream = new FileOutputStream(newFile);
+						DataOutputStream out = new DataOutputStream(fstream);
+						BufferedWriter br = new BufferedWriter(new OutputStreamWriter(out));
+						
+						//write version change label
+						br.write(getVersionChangeComment());
+						br.newLine();
+						
+						for (Line line : lines) {
+							
+							//TODO ADD change comment here
+							br.write(line.getLine());
+							br.newLine();
+						}
+						br.flush();
+						
+						br.close();
+						out.close();
+						
+					}
+				}else{
+					System.out.println("File exists");
+				}
+			} catch (Exception e) {
+				System.err
+				.println("Could not parse file\nError: " + e.getMessage());
+				return;
+			}
+			
+		}
+			
+	}
+	
+	
 	public ArrayList<Change> getChanges(){
 		return changes;
 	}

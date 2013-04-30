@@ -22,7 +22,7 @@ public class ChangeLabel extends javax.swing.JPanel {
         addedLines.setText("" + this.changeComment.linesAdded);
         changedLines.setText("" + this.changeComment.linesChanged);
         deletedLines.setText("" + this.changeComment.linesDeleted);
-        totalLines.setText("" + this.changeComment.totalLOC);
+        unchanged.setText("" + this.changeComment.unchangedLines);
     }
 
     /**
@@ -39,7 +39,7 @@ public class ChangeLabel extends javax.swing.JPanel {
         lblDescription = new javax.swing.JLabel();
         lblAddedLines = new javax.swing.JLabel();
         lblChangedLines = new javax.swing.JLabel();
-        lblTotalLines = new javax.swing.JLabel();
+        lblunchangedLines = new javax.swing.JLabel();
         btnSave = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
         name = new javax.swing.JTextField();
@@ -47,7 +47,7 @@ public class ChangeLabel extends javax.swing.JPanel {
         description = new javax.swing.JTextArea();
         addedLines = new javax.swing.JLabel();
         changedLines = new javax.swing.JLabel();
-        totalLines = new javax.swing.JLabel();
+        unchanged = new javax.swing.JLabel();
         calendar = new JDateChooser();
         lblDeletedLines = new javax.swing.JLabel();
         deletedLines = new javax.swing.JLabel();
@@ -62,8 +62,11 @@ public class ChangeLabel extends javax.swing.JPanel {
 
         lblChangedLines.setText("Changed Lines:");
 
-        lblTotalLines.setText("Total Lines:");
-
+        lblDeletedLines.setText("Deleted Lines:");
+        
+        lblunchangedLines.setText("Unchanged Lines:");
+        
+        
         btnSave.setLabel("Save");
         btnSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -98,7 +101,7 @@ public class ChangeLabel extends javax.swing.JPanel {
                 .add(5, 5, 5)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(lblDeletedLines)
-                    .add(lblTotalLines)
+                    .add(lblunchangedLines)
                     .add(lblChangedLines)
                     .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                         .add(lblCalendar)
@@ -112,7 +115,7 @@ public class ChangeLabel extends javax.swing.JPanel {
                         .add(name)
                         .add(addedLines)
                         .add(changedLines)
-                        .add(totalLines)
+                        .add(unchanged)
                         .add(calendar, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .add(deletedLines))
                 .add(5, 5, 5))
@@ -149,8 +152,8 @@ public class ChangeLabel extends javax.swing.JPanel {
                     .add(deletedLines))
                 .add(18, 18, 18)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(lblTotalLines)
-                    .add(totalLines))
+                    .add(lblunchangedLines)
+                    .add(unchanged))
                 .add(18, 18, 18)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(btnSave)
@@ -186,8 +189,8 @@ public class ChangeLabel extends javax.swing.JPanel {
     private javax.swing.JLabel lblDeletedLines;
     private javax.swing.JLabel lblDescription;
     private javax.swing.JLabel lblName;
-    private javax.swing.JLabel lblTotalLines;
+    private javax.swing.JLabel lblunchangedLines;
     private javax.swing.JTextField name;
-    private javax.swing.JLabel totalLines;
+    private javax.swing.JLabel unchanged;
     // End of variables declaration                   
 }

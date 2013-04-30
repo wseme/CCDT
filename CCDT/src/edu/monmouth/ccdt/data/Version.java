@@ -92,8 +92,6 @@ public class Version {
 	
 
 	public String getVersionChangeComment(){
-		
-		//TODO integrate with verisionComment
 		int totalAdded     = 0;
 		int totalChanged    = 0;
 		int totalDeleted   = 0;

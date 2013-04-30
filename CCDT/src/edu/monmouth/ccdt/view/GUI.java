@@ -403,7 +403,7 @@ public class GUI extends javax.swing.JFrame implements View {
 
 		@Override
 		public boolean isLeaf(Object arg0) {
-			return arg0 instanceof Change || (arg0 instanceof Version && ((Version)arg0).getChanges().size() == 0);
+			return arg0 instanceof Version;
 		}
 
 		@Override

@@ -97,7 +97,7 @@ public class Change {
 		
 	}
 	
-	private void diff(){;
+	private void diff(){
 	
 		File previousFile = getPreviousFile();
 		File currentFile = getCurrentFile();
@@ -151,6 +151,63 @@ public class Change {
 			}
 			index++;
 		}
+	}
+	
+	public String getCommentsWithFileLines(){
+		
+		StringBuilder fileBuilder = new StringBuilder();
+		
+		File previousFile = getPreviousFile();
+		File currentFile = getCurrentFile();
+	
+		if(previousFile == null){
+			
+			ArrayList<Line> currentLines = currentFile.getLines();
+			for(Line curLine: currentLines){
+				fileBuilder.append(curLine.getLine() + "// INSERTED\n");
+			}
+			return fileBuilder.toString();
+		}
+		
+		ArrayList<String> prevBuilder = new ArrayList<String>();
+			for(Line prevLine: previousFile.getLines()){
+				prevBuilder.add(prevLine.getLine());
+			}
+		
+		
+		ArrayList<String> currBuilder = new ArrayList<String>();
+		ArrayList<Line> currentLines = currentFile.getLines();
+		for(Line curLine: currentLines){
+			currBuilder.add(curLine.getLine());
+		}
+
+		
+		DiffRowGenerator.Builder diffBuilder = new DiffRowGenerator.Builder();
+		DiffRowGenerator diffGen = diffBuilder.build();
+		List<DiffRow> rows = diffGen.generateDiffRows(prevBuilder, currBuilder);
+		for(DiffRow diffRow : rows){
+			//XXX need to do this before getting the index, r else it will through array out of bounds
+			fileBuilder.append(diffRow.getNewLine());
+			
+			if(diffRow.getTag() == Tag.DELETE){
+				fileBuilder.append("// DELETED - ").append(diffRow.getOldLine());
+				
+			}else if( diffRow.getTag() == Tag.CHANGE && diffRow.getOldLine().length() == 0 && diffRow.getNewLine().length() > 0 ){
+				//if old line is 0 and new line contains info, set it insert, not change
+				fileBuilder.append("// INSERTED");
+
+			}else if(diffRow.getTag() == Tag.CHANGE){
+				fileBuilder.append("// CHANGED - ").append(diffRow.getOldLine());
+			}else if(diffRow.getTag() == Tag.INSERT){
+				fileBuilder.append("// INSERTED");
+			}else{
+				fileBuilder.append("// No CHANGED ");
+			}
+			fileBuilder.append("\n");
+		}
+		
+		return fileBuilder.toString();
+		
 	}
 	
 	public File getFile(){

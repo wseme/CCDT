@@ -104,6 +104,9 @@ public class Version {
 			totalNotChanged += change.getLineAmountNoChange();
 		
 		}
+		if(versionComment == null){
+			versionComment = new ChangeComment(this);
+		}
 		
 		return "//" + getName() + " date uploaded:" + versionComment.date + " | Total line counts - Added:"
 				+ totalAdded + ", Deleted:" + totalDeleted + ", Changed:" + totalChanged + ", Not Changed:" + totalNotChanged;

@@ -149,8 +149,16 @@ public class Program {
 
 		for (Version version : getVersions()) {
 
-			
+			ArrayList<Change> changes = version.getChanges();
 			for (File file : version.getFiles()) {
+				
+				Change thisChange = null;
+				for(Change change: changes){
+					if(change.getFile().getFileName().equals(file.getFileName())){
+						thisChange = change;
+						break;
+					}
+				}
 
 				ArrayList<Line> lines = file.getLines();
 
@@ -165,8 +173,11 @@ public class Program {
 
 				try {
 					// if file doesn't exists, then create it
-					if (!newFile.exists()) {
-						if (newFile.createNewFile()) {
+					if (newFile.exists()) {
+						newFile.delete();
+					}
+					
+					if (newFile.createNewFile()) {
 
 							FileOutputStream fstream = new FileOutputStream(
 									newFile);
@@ -177,25 +188,28 @@ public class Program {
 							// write version change label
 							br.write(version.getVersionChangeComment());
 							br.newLine();
-
-							for (Line line : lines) {
-
-								// TODO ADD change comment here
-								br.write(line.getLine());
-								br.newLine();
+						
+							if(thisChange == null){
+								for (Line line : lines) {
+									br.write(line.getLine()+ "// INSERTED");
+									br.newLine();
+								}
+							}else{
+								br.write(thisChange.getCommentsWithFileLines());
 							}
 							br.flush();
 
 							br.close();
 							out.close();
 
-						}
+						
 					} else {
 						System.out.println("File exists");
 					}
 				} catch (Exception e) {
-					System.err.println("Could not parse file\nError: "
-							+ e.getMessage());
+//					System.err.println("Could not parse file\nError: "
+//							+ e.getMessage());
+					e.printStackTrace();
 					return;
 				}
 

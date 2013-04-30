@@ -92,44 +92,54 @@ public class Version {
 	
 
 	public String getVersionChangeComment(){
-		int totalAdded     = 0;
-		int totalChanged    = 0;
-		int totalDeleted   = 0;
-		int totalNotChanged= 0;
 		
-		for(Change change : changes){
-			totalAdded      += change.getLineAmountAdded();
-			totalChanged    += change.getLineAmountChanged();
-			totalDeleted    += change.getLineAmountDeleted();
-			totalNotChanged += change.getLineAmountNoChange();
+		StringBuilder commentBuilder = new StringBuilder();
 		
-		}
-		if(versionComment == null){
-			versionComment = new ChangeComment(this);
-		}
+		int linesAdded = 0;
+		int linesChanged = 0;
+		int linesDeleted = 0;
+		int linesUnchanged = 0;
 		
-		return "//" + getName() + " date uploaded:" + versionComment.date + " | Total line counts - Added:"
-				+ totalAdded + ", Deleted:" + totalDeleted + ", Changed:" + totalChanged + ", Not Changed:" + totalNotChanged;
-	}
-	
-	public String createOverallVersionReport(){
-		
-		//TODO integrate with verisionComment
-		int totalAdded     = 0;
-		int totalChanged   = 0;
-		int totalDeleted   = 0;
-		int totalNotChanged= 0;
-		
+		//update just incase changes are not saved
 		for(Change change : getChanges()){
-			totalAdded      += change.getLineAmountAdded();
-			totalChanged    += change.getLineAmountChanged();
-			totalDeleted    += change.getLineAmountDeleted();
-			totalNotChanged += change.getLineAmountNoChange();
+			linesAdded      += change.getLineAmountAdded();
+			linesChanged    += change.getLineAmountChanged();
+			linesDeleted    += change.getLineAmountDeleted();
+			linesUnchanged  += change.getLineAmountNoChange();
 		}
 		
-		return getName() + " date uploaded:" + versionComment.date + " | Total line counts - Added:"
-				+ totalAdded + ", Deleted:" + totalDeleted + ", Changed:" + totalChanged + ", Not Changed:" + totalNotChanged;
+		
+		commentBuilder.append("//").append(getName());
 	
+		if(versionComment == null){
+			 getChangeComment();
+		}
+		
+		versionComment.linesAdded = linesAdded;
+		versionComment.linesChanged = linesChanged;
+		versionComment.linesDeleted = linesDeleted;
+		versionComment.linesUnchanged = linesUnchanged;
+		
+		if(versionComment.date != null){
+			commentBuilder.append("\n//date uploaded: ").append(versionComment.date);
+		}
+		
+		if(versionComment.name != null && !versionComment.name.equals("") ){
+			commentBuilder.append("\n//developer name: ").append(versionComment.name);
+		}
+		
+		if(versionComment.description != null && !versionComment.description.equals("")){
+			commentBuilder.append("\n//reason: ").append(versionComment.description);
+		}
+		
+		commentBuilder.append("\n//--------------Version line Counts--------------");
+		commentBuilder.append("\n// ADDED     - ").append(versionComment.linesAdded);
+		commentBuilder.append("\n// DELETED   - ").append(versionComment.linesDeleted);
+		commentBuilder.append("\n// CHANGED   - ").append(versionComment.linesChanged);
+		commentBuilder.append("\n// NO CHANGE - ").append(versionComment.linesUnchanged);
+		commentBuilder.append("\n//-----------------------------------------------");
+		
+		return commentBuilder.toString();
 	}
 	
 	public ArrayList<Change> getChanges(){

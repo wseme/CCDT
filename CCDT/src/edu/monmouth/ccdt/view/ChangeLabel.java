@@ -22,7 +22,7 @@ public class ChangeLabel extends javax.swing.JPanel {
         addedLines.setText("" + this.changeComment.linesAdded);
         changedLines.setText("" + this.changeComment.linesChanged);
         deletedLines.setText("" + this.changeComment.linesDeleted);
-        unchanged.setText("" + this.changeComment.unchangedLines);
+        unchanged.setText("" + this.changeComment.linesUnchanged);
     }
 
     /**

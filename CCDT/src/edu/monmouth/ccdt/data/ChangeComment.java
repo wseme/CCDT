@@ -6,10 +6,10 @@ public class ChangeComment {
 	public String name;
 	public String description;
 	public DateTime date;
-	public int linesAdded;
-	public int linesChanged;
-	public int linesDeleted;
-	public int unchangedLines;
+	public int linesAdded = 0;
+	public int linesChanged = 0;
+	public int linesDeleted = 0;
+	public int linesUnchanged = 0;
 	
 	public ChangeComment(Version version) {
 		//TODO make helper methods in version to iterate over changes and add them.
@@ -17,16 +17,11 @@ public class ChangeComment {
 		this.description = "";
 		this.date = new DateTime();
 		
-		this.linesAdded = 0;
-		this.linesChanged = 0;
-		this.linesDeleted = 0;
-		this.unchangedLines = 0;
-		
 		for(Change change : version.getChanges()){
 			this.linesAdded      += change.getLineAmountAdded();
 			this.linesChanged    += change.getLineAmountChanged();
 			this.linesDeleted    += change.getLineAmountDeleted();
-			this.unchangedLines += change.getLineAmountNoChange();
+			this.linesUnchanged  += change.getLineAmountNoChange();
 		
 		}
 	}

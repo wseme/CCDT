@@ -186,7 +186,7 @@ public class Change {
 		int lineCount = 0;
 		
 		for(Line line : lines){
-			if (line.getType() == ChangeType.CHANGED){
+			if (line.getType() != ChangeType.NO_CHANGE){//add and deleted count as changed
 				lineCount++;
 			}
 		}

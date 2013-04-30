@@ -1,5 +1,9 @@
 package edu.monmouth.ccdt.data;
 
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 
@@ -14,8 +18,8 @@ public class Program {
 		int version = versions.size() + 1;
 		
 		Version versionToAdd = new Version(version, fileFolder);
-		//TODO check for deleted files in a version here, (see teambox)
 		
+		//TODO check for deleted files in a version here, (see teambox)
 		if (versions.size() > 0) {
 			Version previousVersion = versions.get(versions.size() - 1);
 			
@@ -23,21 +27,29 @@ public class Program {
 			ArrayList<File> previousFiles = previousVersion.getFiles();
 			
 			//Check for previous deleted file, if found, remove it from current version
-			for(File oldFile: previousFiles){
-//				String fileName = oldFile.getFileName();
-				boolean isDeletedFile = true;
-				
-				for(Line line:oldFile.getLines()){
-					if(line.getType() !=ChangeType.DELETED){
-						isDeletedFile = false;
-					}
-				}
-				
-				if(isDeletedFile){
-					versionToAdd.removeFile(oldFile);
-				}
-					
-			}
+//			for(File oldFile: previousFiles){
+////				String fileName = oldFile.getFileName();
+//
+//				for (File newFile : updatedFiles) {
+//					
+//					if (newFile.getFileName().equals(oldFile.getFileName())) {
+//						boolean isDeletedFile = true;
+//						for (Line line : oldFile.getLines()) {
+//							if (line.getType() != ChangeType.DELETED) {
+//								isDeletedFile = false;
+//								break;
+//							}
+//						}
+//
+//						if (isDeletedFile) {
+//							versionToAdd.removeFile(newFile);
+//							versionToAdd.removeFile(oldFile);
+//							
+//						}
+//					}
+//				}
+//
+//			}
 			
 
 			// create change for new version added
@@ -71,19 +83,19 @@ public class Program {
 					
 					if(fileName.equals(newFile)){
 						
-//						//check if file is already deleted, if not it, mark is found
-//						boolean isDeleted = true;
-//						for(Line checkLine:updatedFile.getLines()){
-//							if(checkLine.getType() != ChangeType.DELETED){
-//								isDeleted = false;
-//								break;
-//							}
-//						}
-//						
-//						if(!isDeleted){
+						//check if file is already deleted, if not it, mark is found
+						boolean isDeleted = true;
+						for(Line checkLine:updatedFile.getLines()){
+							if(checkLine.getType() != ChangeType.DELETED){
+								isDeleted = false;
+								break;
+							}
+						}
+						
+						if(!isDeleted){
 							isFound=true;//prevent code below from being executed
 							break;
-//						}
+						}
 							
 					}
 				}
@@ -124,7 +136,73 @@ public class Program {
 	public ArrayList<Version> getVersions(){
 		return versions;
 	}
-	
+
+	public void saveFilesWithComments(java.io.File fileDirectory) {
+		// get changes from each file
+		// write version comment to file in the header
+		// write comments to file about each change.
+
+		if (!fileDirectory.isDirectory()) {
+			System.err.println("Inputted file must be a directory.");
+			return;
+		}
+
+		for (Version version : getVersions()) {
+
+			
+			for (File file : version.getFiles()) {
+
+				ArrayList<Line> lines = file.getLines();
+
+				String fileName = fileDirectory.getPath()
+						+ System.getProperty("file.separator")
+						+ file.getFileName();
+
+				System.out.println("Writing file: " + fileName);
+
+				// write file
+				java.io.File newFile = new java.io.File(fileName);
+
+				try {
+					// if file doesn't exists, then create it
+					if (!newFile.exists()) {
+						if (newFile.createNewFile()) {
+
+							FileOutputStream fstream = new FileOutputStream(
+									newFile);
+							DataOutputStream out = new DataOutputStream(fstream);
+							BufferedWriter br = new BufferedWriter(
+									new OutputStreamWriter(out));
+
+							// write version change label
+							br.write(version.getVersionChangeComment());
+							br.newLine();
+
+							for (Line line : lines) {
+
+								// TODO ADD change comment here
+								br.write(line.getLine());
+								br.newLine();
+							}
+							br.flush();
+
+							br.close();
+							out.close();
+
+						}
+					} else {
+						System.out.println("File exists");
+					}
+				} catch (Exception e) {
+					System.err.println("Could not parse file\nError: "
+							+ e.getMessage());
+					return;
+				}
+
+			}
+		}
+
+	}
 	
 	
 //	public static void main(String[] args){

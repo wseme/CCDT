@@ -342,7 +342,7 @@ public class GUI extends javax.swing.JFrame implements View {
 
 		int returnVal = chooser.showOpenDialog(this);
 		if(returnVal == JFileChooser.APPROVE_OPTION) {
-			this.controller.saveFileWithComments(chooser.getSelectedFile());
+			this.controller.saveFilesWithComments(chooser.getSelectedFile());
 		}
 		
 	}

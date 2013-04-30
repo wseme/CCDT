@@ -24,8 +24,7 @@ public class Controller {
 		gui.loadProgram(program);
 	}
 
-	public void saveFileWithComments(File selectedFile) {
-		//TODO Uncomment below
-		//program.saveFileWithComments(selectedFile);
+	public void saveFilesWithComments(File fileDirectory) {
+		program.saveFilesWithComments(fileDirectory);
 	}
 }

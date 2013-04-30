@@ -129,66 +129,6 @@ public class Version {
 	
 	}
 	
-	public void writeCommentsToFiles(java.io.File fileFolder){
-		//get changes from each file
-		//write version comment to file in the header
-		//write comments to file about each change.
-		
-		if (!fileFolder.isDirectory()){
-			System.err.println("Inputted file must be a directory.");
-			return;	
-		}
-		
-		for(File file: files){
-			
-			ArrayList<Line> lines = file.getLines();
-			
-			String fileName = fileFolder.getPath() + System.getProperty("file.separator") +file.getFileName();
-			
-			System.out.println("Writing file: " + fileName); 
-			
-			//write file
-			java.io.File newFile = new java.io.File(fileName);
-			
-			try {
-				// if file doesnt exists, then create it
-				if (!newFile.exists()) {
-					if(newFile.createNewFile()){
-
-						FileOutputStream fstream = new FileOutputStream(newFile);
-						DataOutputStream out = new DataOutputStream(fstream);
-						BufferedWriter br = new BufferedWriter(new OutputStreamWriter(out));
-						
-						//write version change label
-						br.write(getVersionChangeComment());
-						br.newLine();
-						
-						for (Line line : lines) {
-							
-							//TODO ADD change comment here
-							br.write(line.getLine());
-							br.newLine();
-						}
-						br.flush();
-						
-						br.close();
-						out.close();
-						
-					}
-				}else{
-					System.out.println("File exists");
-				}
-			} catch (Exception e) {
-				System.err
-				.println("Could not parse file\nError: " + e.getMessage());
-				return;
-			}
-			
-		}
-			
-	}
-	
-	
 	public ArrayList<Change> getChanges(){
 		return changes;
 	}

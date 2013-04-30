@@ -27,30 +27,6 @@ public class Program {
 			ArrayList<File> previousFiles = previousVersion.getFiles();
 			
 			//Check for previous deleted file, if found, remove it from current version
-//			for(File oldFile: previousFiles){
-////				String fileName = oldFile.getFileName();
-//
-//				for (File newFile : updatedFiles) {
-//					
-//					if (newFile.getFileName().equals(oldFile.getFileName())) {
-//						boolean isDeletedFile = true;
-//						for (Line line : oldFile.getLines()) {
-//							if (line.getType() != ChangeType.DELETED) {
-//								isDeletedFile = false;
-//								break;
-//							}
-//						}
-//
-//						if (isDeletedFile) {
-//							versionToAdd.removeFile(newFile);
-//							versionToAdd.removeFile(oldFile);
-//							
-//						}
-//					}
-//				}
-//
-//			}
-			
 
 			// create change for new version added
 			for (File file : updatedFiles) {
@@ -129,8 +105,6 @@ public class Program {
 		}
 		
 		versions.add(versionToAdd);
-		
-		
 	}
 	
 	public ArrayList<Version> getVersions(){
@@ -207,8 +181,6 @@ public class Program {
 						System.out.println("File exists");
 					}
 				} catch (Exception e) {
-//					System.err.println("Could not parse file\nError: "
-//							+ e.getMessage());
 					e.printStackTrace();
 					return;
 				}

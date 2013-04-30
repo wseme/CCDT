@@ -186,7 +186,7 @@ public class Change {
 		DiffRowGenerator diffGen = diffBuilder.build();
 		List<DiffRow> rows = diffGen.generateDiffRows(prevBuilder, currBuilder);
 		for(DiffRow diffRow : rows){
-			//XXX need to do this before getting the index, r else it will through array out of bounds
+			
 			fileBuilder.append(diffRow.getNewLine());
 			
 			if(diffRow.getTag() == Tag.DELETE){

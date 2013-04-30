@@ -95,7 +95,6 @@ public class File {
 	}
 
 	public Version getVersion() {
-		// TODO Auto-generated method stub
 		return this.version;
 	}
 }

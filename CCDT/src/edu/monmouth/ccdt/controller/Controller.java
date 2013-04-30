@@ -23,4 +23,10 @@ public class Controller {
 		program.addVersion(fileFolder);
 		gui.loadProgram(program);
 	}
+
+	public void saveFileWithComments(File selectedFile) {
+		//TODO Uncomment below
+		//		program.saveFileWithComments(selectedFile);
+		
+	}
 }

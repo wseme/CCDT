@@ -36,6 +36,7 @@ public class GUI extends javax.swing.JFrame implements View {
 	private Program program;
 	private Controller controller;
 	private JPopupMenu popupMenu;
+	private JMenuItem jMenuItem3;
 	
 	@SuppressWarnings("unused")
 	private GUI() {
@@ -172,6 +173,7 @@ public class GUI extends javax.swing.JFrame implements View {
 		treeFiles.setModel(null);
 		if (this.program.getVersions().size() > 0){
 			treeVersions.setModel(new VersionListModel());
+			jMenuItem3.setEnabled(true);
 		}
 		
 	}
@@ -238,6 +240,7 @@ public class GUI extends javax.swing.JFrame implements View {
 		menuFile = new javax.swing.JMenu();
 		jMenuItem1 = new javax.swing.JMenuItem();
 		jMenuItem2 = new javax.swing.JMenuItem();
+		jMenuItem3 = new javax.swing.JMenuItem();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("Change Counter Development Tool");
@@ -266,7 +269,17 @@ public class GUI extends javax.swing.JFrame implements View {
 			}
 		});
 		menuFile.add(jMenuItem1);
-
+		
+		
+		jMenuItem3.setText("Save With Comments");
+		jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				openSaveWithComments();
+			}
+		});
+		jMenuItem3.setEnabled(false);
+		menuFile.add(jMenuItem3);
+		
 		jMenuItem2.setText("Exit");
 		jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -321,7 +334,18 @@ public class GUI extends javax.swing.JFrame implements View {
 				);
 
 		pack();
-	}                     
+	}
+	
+	private void openSaveWithComments() {
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+		int returnVal = chooser.showOpenDialog(this);
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			this.controller.saveFileWithComments(chooser.getSelectedFile());
+		}
+		
+	}
                    
 	private javax.swing.JMenuBar jMenuBar1;
 	private javax.swing.JMenuItem jMenuItem1;

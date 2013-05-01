@@ -23,7 +23,6 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import edu.monmouth.ccdt.controller.Controller;
-import edu.monmouth.ccdt.data.Change;
 import edu.monmouth.ccdt.data.ChangeType;
 import edu.monmouth.ccdt.data.File;
 import edu.monmouth.ccdt.data.Line;
